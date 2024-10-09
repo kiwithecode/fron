@@ -11,27 +11,30 @@ export class VehicleService {
 
   constructor(private http: HttpClient) {}
 
-  getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(`${this.apiUrl}/vehicles`);
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'apikey': this.supabaseKey,
+      'Authorization': `Bearer ${this.supabaseKey}`
+    });
   }
 
-  getVehicle(id: string): Observable<Vehicle> {
-    return this.http.get<Vehicle>(`${this.apiUrl}/vehicles/${id}`);
+  getVehicles(): Observable<any[]> {
+    return this.http.get<any[]>(this.supabaseUrl, { headers: this.getHeaders() });
   }
 
-  createVehicle(vehicle: Vehicle): Observable<Vehicle> {
-    return this.http.post<Vehicle>(`${this.apiUrl}/vehicles`, vehicle);
+  getVehicle(id: string): Observable<any> {
+    return this.http.get<any>(`${this.supabaseUrl}?id=eq.${id}`, { headers: this.getHeaders() });
   }
 
-  updateVehicle(id: string, vehicle: Vehicle): Observable<Vehicle> {
-    return this.http.put<Vehicle>(`${this.apiUrl}/vehicles/${id}`, vehicle);
+  createVehicle(vehicle: any): Observable<any> {
+    return this.http.post<any>(this.supabaseUrl, vehicle, { headers: this.getHeaders() });
   }
 
-  deleteVehicle(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/vehicles/${id}`);
+  updateVehicle(id: string, vehicle: any): Observable<any> {
+    return this.http.patch<any>(`${this.supabaseUrl}?id=eq.${id}`, vehicle, { headers: this.getHeaders() });
   }
 
-  getCarModels(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/car-models`);
+  deleteVehicle(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.supabaseUrl}?id=eq.${id}`, { headers: this.getHeaders() });
   }
 }
