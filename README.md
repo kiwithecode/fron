@@ -55,7 +55,6 @@ cd pr_auto
 ```
 
 5. El backend se ejecutará en `http://localhost:8080`.
-   pero como se trabajo en una base en la nube se ejecuta en `https://xzbrmmlcmlqtlmnjlcnz.supabase.co/rest`
 
 ## Aplicación desplegada
 
