@@ -1,5 +1,3 @@
-Aquí tienes la documentación actualizada con las instrucciones para clonar y ejecutar los repositorios de frontend (Angular) y backend (Spring Boot):
-
 # VehicleRegistrationFrontend
 
 Este proyecto fue generado con [Angular CLI](https://github.com/angular/angular-cli) versión 18.2.7.
@@ -58,7 +56,7 @@ cd pr_auto
 
 ## Aplicación desplegada
 
-La aplicación _VehicleRegistrationFrontend_ ha sido desplegada y puede ser accesada en el siguiente enlace: [VehicleRegistrationFrontend](https://prauto.netlify.app/vehicles).
+La aplicación _VehicleRegistrationFrontend_ ha sido desplegada y puede ser accesada en el siguiente enlace: [VehicleRegistrationFrontend](https://prauto.netlify.app).
 
 ## Repositorios
 
@@ -124,5 +122,3 @@ curl --location --globoff --request DELETE 'https://xzbrmmlcmlqtlmnjlcnz.supabas
 ## Ayuda adicional
 
 Para obtener más ayuda sobre Angular CLI, utiliza `ng help` o consulta la [Descripción general y referencia de comandos de Angular CLI](https://angular.dev/tools/cli).
-
-Si necesitas más ajustes o detalles, estaré encantado de ayudarte.
