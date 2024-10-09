@@ -34,12 +34,12 @@ import { Vehicle } from '../models/vehicle.model';
         </mat-form-field>
         <mat-form-field>
           <mat-label>Modelo</mat-label>
-          <mat-select formControlName="modelo" required>
-            <mat-option *ngFor="let model of carModels" [value]="model">
-              {{model}}
+          <mat-select formControlName="modelo_id" required>
+            <mat-option *ngFor="let model of carModels" [value]="model.id">
+              {{model.brand}} - {{model.name}}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="vehicleForm.get('modelo')?.hasError('required')">El modelo es requerido</mat-error>
+          <mat-error *ngIf="vehicleForm.get('modelo_id')?.hasError('required')">El modelo es requerido</mat-error>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Color</mat-label>
@@ -56,7 +56,7 @@ import { Vehicle } from '../models/vehicle.model';
         </mat-form-field>
         <mat-form-field>
           <mat-label>Chasis</mat-label>
-          <input matInput formControlName="chasis" required [readonly]="!isEditing">
+          <input matInput formControlName="chasis" required [readonly]="isEditing">
           <mat-error *ngIf="vehicleForm.get('chasis')?.hasError('required')">El chasis es requerido</mat-error>
           <mat-error *ngIf="vehicleForm.get('chasis')?.hasError('pattern')">Formato de chasis inválido</mat-error>
         </mat-form-field>
@@ -74,33 +74,17 @@ export class VehicleFormComponent implements OnInit {
   vehicleForm: FormGroup;
   isEditing = false;
   currentYear = new Date().getFullYear();
-  carModels: string[] = [
-    'Toyota Corolla',
-    'Honda Civic',
-    'Ford F-150',
-    'Chevrolet Silverado',
-    'Nissan Altima',
-    'Honda Accord',
-    'Toyota Camry',
-    'Jeep Grand Cherokee',
-    'Ford Escape',
-    'Toyota RAV4',
-    'Honda CR-V',
-    'Chevrolet Equinox',
-    'Nissan Rogue',
-    'Ford Explorer',
-    'Subaru Outback'
-  ];
+  carModels: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private vehicleService: VehicleService,
     public dialogRef: MatDialogRef<VehicleFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Vehicle
+    @Inject(MAT_DIALOG_DATA) public data: Vehicle | null
   ) {
     this.vehicleForm = this.fb.group({
       placa: ['', [Validators.required, Validators.pattern(/^[A-Z]{3}-\d{4}$/)]],
-      modelo: ['', Validators.required],
+      modelo_id: ['', Validators.required],
       color: ['', Validators.required],
       anio: ['', [Validators.required, Validators.min(1900), Validators.max(this.currentYear)]],
       chasis: ['', [Validators.required, Validators.pattern(/^[A-HJ-NPR-Z0-9]{17}$/)]]
@@ -108,13 +92,23 @@ export class VehicleFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCarModels();
     if (this.data) {
       this.isEditing = true;
       this.vehicleForm.patchValue(this.data);
+      this.vehicleForm.get('chasis')?.disable();
     } else {
-      // Generate random chasis for new vehicles
       this.vehicleForm.get('chasis')?.setValue(this.generateRandomChasis());
     }
+  }
+
+  loadCarModels(): void {
+    this.vehicleService.getCarModels().subscribe({
+      next: (models) => {
+        this.carModels = models;
+      },
+      error: (error) => console.error('Error loading car models:', error)
+    });
   }
 
   generateRandomChasis(): string {
@@ -128,16 +122,21 @@ export class VehicleFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.vehicleForm.valid) {
-      const vehicle: Vehicle = this.vehicleForm.value;
-      if (this.isEditing) {
-        vehicle.id = this.data.id;
-        this.vehicleService.updateVehicle(vehicle.id!, vehicle).subscribe({
-          next: () => this.dialogRef.close(true),
+      const vehicle: Vehicle = this.vehicleForm.getRawValue();
+      if (this.isEditing && this.data) {
+        this.vehicleService.updateVehicle(this.data.id!, vehicle).subscribe({
+          next: () => {
+            console.log('Vehicle updated successfully');
+            this.dialogRef.close(true);
+          },
           error: (error) => console.error('Error updating vehicle:', error)
         });
       } else {
         this.vehicleService.createVehicle(vehicle).subscribe({
-          next: () => this.dialogRef.close(true),
+          next: () => {
+            console.log('Vehicle created successfully');
+            this.dialogRef.close(true);
+          },
           error: (error) => console.error('Error creating vehicle:', error)
         });
       }
